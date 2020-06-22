@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+<title>Sklep</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="
+sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel = "stylesheet" type="text/css" href = "{% static 'store/css/store.css' %}"></link>
+<script type = "text/javascript">
+  var user = '{{request.user}}'
+  function getToken(name) {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie !== '') {
+		        var cookies = document.cookie.split(';');
+		        for (var i = 0; i < cookies.length; i++) {
+		            var cookie = cookies[i].trim();
+		            // Does this cookie string begin with the name we want?
+		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		                break;
+		            }
+		        }
+		    }
+		    return cookieValue;
+		}
+    var csrftoken = getToken('csrftoken')
+    
+  function getCookie(name) {
+    //split cookie string and get individual name=value pairs in an array
+    var cookieArr = document.cookie.split(";");
+    // for loop through array element
+    for(var i = 0; i < cookieArr.length; i++){
+      var cookiePair = cookieArr[i].split("=");
+      //removing whitespace at the beginning of the cookie name and compare it with given string
+      if(name == cookiePair[0].trim()) {
+        //decode the cookie value and return
+        return decodeURIComponent(cookiePair[1]);
+      }
+    }
+    // return null if not found
+    return null;
+  }
+  var cart = JSON.parse(getCookie('cart'))
+  if(cart == undefined){
+    cart = {} //javascript object, like python dict
+    console.log('Cart was created')
+    document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/" 
+  }
+  console.log('Cart:', cart)
+
+</script>
+</head>
+<body>
+   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="{% url 'store' %}">Sklep</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <div class="navbar-nav">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Kategorie
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                {% for cat in categories %}
+                <a class="dropdown-item" href="{% url 'categoryproducts' cat.category %}">{{cat.category}}</a>
+                {% endfor%}
+            </div>
+         </div>
+         <div class = "navbar-nav">
+           <a class="nav-item nav-link disabled" href="#">Promocje</a>
+           <a class="nav-item nav-link disabled" href="#">Nowości</a>
+         </div>
+         <div class = "navbar-nav ml-auto">
+            <a class="nav-item nav-link disabled" href="#">Dostawa i płatność</a>
+            <a class="nav-link" href="{% url 'cart' %}"><img src="{% static 'store/images/cart.png' %}" id = "cart-image"></a>
+            <a href="{% url 'cart' %}"><p id = "cart-counter">{{ cartItems }}</p></a>
+         </div>
+      </div>
+    </nav>
+    {% block content %}
+    {% endblock %}
+    <footer>
+      <div class = "row bg-dark">
+        <div class = "col-lg-3">
+          <h6><strong>Popularne kategorie</strong></h6>
+          <div class="list-group list-group-flush">
+            {% for cat in categories %}
+            <a href="{% url 'categoryproducts' cat.category %}" class="list-group-item list-group-item-action">{{cat.category}}</a>
+            {% endfor %}
+          </div>
+        </div>
+        <div class = "col-lg-3">
+          <h6><strong>Pomoc i dostawa</strong></h6>
+          <div class="list-group list-group-flush">
+            <button type="button" class="list-group-item list-group-item-action">Dostawa i płatność</button>
+            <button type="button" class="list-group-item list-group-item-action ">Sklep stacjonarne</button>
+            <button type="button" class="list-group-item list-group-item-action">FAQ</button>
+            <button type="button" class="list-group-item list-group-item-action">Reklamacje</button>
+          </div>
+        </div>
+        <div class = "col-lg-3">
+          <h6><strong>Polecane siłownie</strong></h6>
+          <div class="list-group list-group-flush">
+            <button type="button" class="list-group-item list-group-item-action">Siłownia A</button>
+            <button type="button" class="list-group-item list-group-item-action ">Siłownia B</button>
+            <button type="button" class="list-group-item list-group-item-action">Siłownia C</button>
+            <button type="button" class="list-group-item list-group-item-action">Siłownia D</button>
+          </div>
+        </div>
+        <div class = "col-lg-3">
+          <h6><strong>Media społecznościowe</strong></h6>
+          <div class="list-group">
+          <a href="#" class="fa fa-facebook"></a>
+          <a href="#" class="fa fa-twitter"></a>
+          <a href="#" class="fa fa-whatsapp"></a>
+          <a href="#" class="fa fa-instagram"></a>
+          </div>
+
+        </div>
+      </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script type = "text/javascript" src = "{% static 'store/js/cart.js' %}"></script>
+</body>
+</html> 

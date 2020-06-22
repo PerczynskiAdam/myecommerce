@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% extends 'store/main.html' %}
+{% load static %}
+<html>
+<head>
+<title>Strona główna</title>
+
+</head>
+
+
+<body>
+{% block content %}
+<div class = 'container'>
+   <div class = 'row'>
+      {% for product in products %}
+      <div class="col-lg-4">
+         <div class = "card">
+            <img src="{{ product.imageURL }}" class="card-img-top">
+            <div class="card-body">
+            <h5 class="card-title">{{product.name}}</h5>
+            <p>{{product.prize}} zł</p>
+            </div>
+            <div class = "card-body">
+               <a href="#" class="btn btn-info">Szczegóły</a>
+               <a href="#" class="btn btn-success">Dodaj do koszyka</a>
+            </div>
+         </div>
+       </div>
+       {% endfor %}
+   </div>
+</div>
+{% endblock %}
+
+</body>
+</html> 

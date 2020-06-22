@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+{% extends 'store/main.html' %}
+<html>
+<head>
+<title>Page Title</title>
+
+</head>
+<body>
+{% block content %}
+<div class = "container">
+   <div class = "row">
+      <div class = "col-lg-7">
+        <div style = "margin-top: 1rem;">
+          <form id = "form">
+              <div class="form-row" id = "user-info">
+                <div class="form-group col-md-6">
+                  <label for="inputEmail4">Email</label>
+                  <input type="email" name = "email" class="form-control" id="inputEmail4">
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="inputName4">Imię</label>
+                  <input type="text" name = "name" class="form-control" id="inputName4">
+                </div>
+                <button type="submit" class="btn btn-dark"class="btn btn-primary">Zaloguj się</button>
+              </div>
+              <!-- <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="inputName">Imię</label>
+                  <input type="text" class="form-control" id="inputName">
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="inputLastName">Nazwisko</label>
+                  <input type="text" class="form-control" id="inputLastName">
+                </div>
+              </div> -->
+              <!-- <div class="form-group">
+                <label for="inputEmail">Email</label>
+                <input type="email" class="form-control" id="inputEmail">
+              </div> -->
+              <div class = "shipping-info">
+                <div class="form-group">
+                  <label for="inputAddress">Adres</label>
+                  <input type="text" name = "address" class="form-control" id="inputAddress">
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="inputCity">Miejscowość</label>
+                    <input type="text" name = "city" class="form-control" id="inputCity">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="inputState">Województwo</label>
+                    <input type = "text" name = "state" class = "form-control" id = "inputState"> 
+                  </div>
+                  <div class="form-group col-md-2">
+                    <label for="inputZip">Kod pocztowy</label>
+                    <input type="text" name = "zip" class="form-control" id="inputZip">
+                  </div>
+                  <button id = "form-btn" type="submit" class="btn btn-dark">Kontynuuj</button>
+              </div>
+              </div>
+            </form>
+          </div>
+          <div class = "payment d-none" id = "pay-btn">
+            <small>Płatność Paypal</small>
+            <button type = "text">Zapłać</button>
+          </div>
+      </div>
+      <div class = "col-lg-5">
+         <table class="table">
+            <thead class = "table-dark">
+            <tr>
+               <th scope="col">Ilość produktów</th>
+               <th scope="col">Cena końcowa</th>
+            </tr>
+            </thead>
+            <tbody class = "table-active">
+            <tr>
+               <td>{{ cartItems }}</td>
+               <td>{{ order.get_cart_total|floatformat:2 }} zł</td>
+            </tr>
+            </tbody>
+         </table>
+      </div>
+
+   </div>
+
+</div>
+<script>
+  var shipping = 'False'
+  var total = '{{order.get_cart_total|floatformat:2}}'
+  console.log(user)
+  // console.log(total)
+
+  if(user != "AnonymousUser"){
+    document.getElementById("user-info").innerHTML = ''
+  }
+
+  var form = document.getElementById("form")
+  form.addEventListener('submit', function(e){
+    e.preventDefault()
+    document.getElementById("form").classList.add("d-none")
+    document.getElementById("pay-btn").classList.remove("d-none")
+  })
+
+  document.getElementById("pay-btn").addEventListener('click', function(e){
+    submitFormData()
+  })
+
+  function submitFormData(){
+    console.log("Payment btn clicked")
+    var formUserData = {
+      'name': null,
+      'email': null,
+      'total':total
+    }
+    console.log(formUserData.name)
+
+    var formShippingData = {
+      'address': null,
+      'city': null,
+      'state': null,
+      'zip_code': null
+    }
+
+    formShippingData.address = form.address.value
+    formShippingData.city = form.city.value
+    formShippingData.state = form.state.value
+    formShippingData.zip_code = form.zip.value
+
+    if(user == "AnonymousUser"){
+      formUserData.name = form.name.value
+      formUserData.email = form.email.value
+    }
+    console.log(formUserData.name)
+
+    var url = '/process_order/'
+    fetch(url, {
+      method: 'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'X-CSRFToken':csrftoken,
+      },
+      body:JSON.stringify({'form': formUserData, 'shipping': formShippingData})
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log('Success:', data);
+      alert('Transaction completed');
+
+      cart = {};//we clean cookies after complete transaction
+      document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/";
+      
+      window.location.href = "{% url 'store' %}"
+    })
+  }
+
+
+
+
+
+</script>
+{% endblock%}
+</body>
+</html> 

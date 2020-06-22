@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+{% extends 'store/main.html' %}
+{% load static %}
+<html>
+<head>
+<title>Cart</title>
+
+</head>
+<body>
+   {% block content %}
+   <div class = 'container'>
+      <div class = 'row'>
+         <div class = "col-lg-12">
+            <table class="table table-bordered">
+               <thead class = "table-dark">
+               <tr>
+                  <th scope="col"></th>
+                  <th scope="col">Produkt</th>
+                  <th scope="col">Cena</th>
+                  <th scope="col">Ilość</th>
+                  <th scope="col">Wartość</th>
+               </tr>
+               </thead>
+               <tbody class = "table-active">
+                  {% for item in items %}
+                  <tr>
+                     <th scope="row">{{ forloop.counter }}</th>
+                     <td>{{ item.product.name }}</td>
+                     <td>{{ item.product.prize|floatformat:2 }}</td>
+                     <td>
+                        <img data-product = {{item.product.id}} data-action = "add" src="{% static 'store/images/arrow-up.png' %}" class = "arrow-icon update-cart">
+                        {{ item.quantity }}
+                        <img data-product = {{item.product.id}} data-action = "remove" src="{% static 'store/images/arrow-down.png' %}" class = "arrow-icon update-cart">
+                     </td>
+                     <td>{{ item.get_total }}</td>
+                  </tr>
+                  {% endfor %}
+                  <!-- <tr>
+                     <th scope="row">2</th>
+                     <td>Gainer</td>
+                     <td>20.99</td>
+                     <td>
+                        <img src="{% static 'store/images/arrow-up.png' %}" class = "arrow-icon">
+                        2
+                        <img src="{% static 'store/images/arrow-down.png' %}" class = "arrow-icon">
+                     </td>
+                     <td>41.98</td>
+                  </tr> -->
+               </tbody>
+            </table>
+         </div>
+      </div>
+      <div class = "row">
+         <div class = "col-lg-4 offset-lg-8">
+            <table class = "table table-borderless table-info">
+               <tbody>
+                  <tr>
+                     <td>Ilość zamówionych produktów:</td>
+                     <td>{{cartItems}}</td>
+                  </tr>
+                  <tr>
+                     <td>Wartość Twojego zamówienia:</td>
+                     <td>{{order.get_cart_total|floatformat:2}} zł</td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+      <div class = "col-lg-4 offset-lg-8"> 
+         <a href = "{% url 'checkout' %}" type = "button" class = "btn btn-success" style = "float: right;">Przejdź do kasy</a>
+      </div>
+   </div>
+   {% endblock %}
+
+</body>
+</html> 
